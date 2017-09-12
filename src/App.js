@@ -20,9 +20,9 @@ class App extends Component {
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
     this.polyline = new google.maps.Polyline({
-      strokeColor: '#000000',
+      strokeColor: '#779ECB',
       strokeOpacity: 1.0,
-      strokeWeight: 2,
+      strokeWeight: 3,
     });
     this.polyline.setMap(this.map);
 
