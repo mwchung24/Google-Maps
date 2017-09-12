@@ -19,6 +19,12 @@ class App extends Component {
       zoom: 15,
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
+    this.polyline = new google.maps.Polyline({
+      strokeColor: '#000000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+    });
+    this.polyline.setMap(this.map);
 
     this.map.addListener('click', (event) => {
       this.handleClick(event.latLng);
@@ -26,13 +32,19 @@ class App extends Component {
   }
 
   handleClick(location) {
+    let path = this.polyline.getPath();
+    path.push(location);
+
     let marker = new google.maps.Marker({
       position:location,
       map: this.map,
       draggable: true,
       animation: google.maps.Animation.DROP,
+      title: '#' + path.getLength(),
     });
+
     this.markers.push(marker);
+
   }
 
   setMarkers(map, lastMarker) {
@@ -46,6 +58,9 @@ class App extends Component {
   }
 
   handleUndo() {
+    let path = this.polyline.getPath();
+    path.pop();
+
     let lastMarker = this.markers.pop();
     this.setMarkers(this.map, lastMarker);
   }
