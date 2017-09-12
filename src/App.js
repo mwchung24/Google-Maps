@@ -10,6 +10,7 @@ class App extends Component {
     this.markers = [];
     this.handleClick = this.handleClick.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
+    this.setMarkers = this.setMarkers.bind(this);
   }
 
   componentDidMount() {
@@ -18,10 +19,10 @@ class App extends Component {
       zoom: 15,
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
-    this.marker = new google.maps.Marker({
-      position: mapOptions.center,
-      map: this.map,
-    });
+    // this.marker = new google.maps.Marker({
+    //   position: mapOptions.center,
+    //   map: this.map,
+    // });
 
     this.map.addListener('click', (event) => {
       this.handleClick(event.latLng);
@@ -36,8 +37,19 @@ class App extends Component {
     this.markers.push(marker);
   }
 
-  handleUndo() {
+  setMarkers(map, lastMarker) {
+    for (let i = 0; i < this.markers.length; i++) {
+      this.markers[i].setMap(map);
+    }
 
+    if (lastMarker) {
+      lastMarker.setMap(null);
+    }
+  }
+
+  handleUndo() {
+    let lastMarker = this.markers.pop();
+    this.setMarkers(this.map, lastMarker);
   }
 
   render() {
