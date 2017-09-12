@@ -4,9 +4,13 @@ import './App.css';
 const google = window.google;
 
 class App extends Component {
-  // constructor(props) {
-  //   super(props);
-  // }
+  constructor(props) {
+    super(props);
+
+    this.markers = [];
+    this.handleClick = this.handleClick.bind(this);
+    this.handleUndo = this.handleUndo.bind(this);
+  }
 
   componentDidMount() {
     const mapOptions = {
@@ -14,14 +18,33 @@ class App extends Component {
       zoom: 15,
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
+    this.marker = new google.maps.Marker({
+      position: mapOptions.center,
+      map: this.map,
+    });
+
+    this.map.addListener('click', (event) => {
+      this.handleClick(event.latLng);
+    });
   }
 
+  handleClick(location) {
+    let marker = new google.maps.Marker({
+      position:location,
+      map: this.map,
+    });
+    this.markers.push(marker);
+  }
 
+  handleUndo() {
+
+  }
 
   render() {
     return (
       <div id='map-container' ref='map'>
         <div className='googlemaps' ref={map => this.mapNode = map}></div>
+        <button onClick={this.handleUndo}>Undo</button>
       </div>
     );
   }
