@@ -19,10 +19,6 @@ class App extends Component {
       zoom: 15,
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
-    // this.marker = new google.maps.Marker({
-    //   position: mapOptions.center,
-    //   map: this.map,
-    // });
 
     this.map.addListener('click', (event) => {
       this.handleClick(event.latLng);
@@ -33,6 +29,8 @@ class App extends Component {
     let marker = new google.maps.Marker({
       position:location,
       map: this.map,
+      draggable: true,
+      animation: google.maps.Animation.DROP,
     });
     this.markers.push(marker);
   }
@@ -56,7 +54,7 @@ class App extends Component {
     return (
       <div id='map-container' ref='map'>
         <div className='googlemaps' ref={map => this.mapNode = map}></div>
-        <button onClick={this.handleUndo}>Undo</button>
+        <button className='undoButton' onClick={this.handleUndo}>Undo</button>
       </div>
     );
   }

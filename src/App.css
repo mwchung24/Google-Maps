@@ -1,9 +1,27 @@
 #map-container {
-  height: 400px;
+  height: 600px;
   width: 100%;
 }
 
 .googlemaps {
-  height: 600px;
+  height: 100%;
   width: 100%;
+}
+
+.undoButton:hover {
+  cursor: pointer;
+}
+
+.undoButton {
+  position: relative;
+  bottom: 35px;
+  left: 100px;
+  width: 100px;
+  height: 30px;
+  color: white;
+  background-color: red;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
 }
