@@ -30,6 +30,23 @@ class App extends Component {
     this.map.addListener('click', (event) => {
       this.handleClick(event.latLng);
     });
+
+    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
+      document.getElementById('search')
+    );
+    let autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autoc')
+    );
+    autocomplete.bindTo('bounds', this.map);
+    autocomplete.addListener('place_changed', () => {
+      let place = autocomplete.getPlace();
+      if (place.geometry.viewport) {
+        this.map.fitBounds(place.geometry.viewport);
+      } else {
+        this.map.setCenter(place.geometry.location);
+        this.map.setZoom(15);
+      }
+    });
   }
 
   handleClick(location) {
@@ -80,6 +97,9 @@ class App extends Component {
     return (
       <div id='map-container' ref='map'>
         <div className='googlemaps' ref={map => this.mapNode = map}></div>
+        <div id='search'>
+          <p className='auto'><input type='text' id='autoc'/></p>
+        </div>
         <button className='undoButton' onClick={this.handleUndo}>Undo</button>
       </div>
     );
