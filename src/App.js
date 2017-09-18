@@ -12,6 +12,7 @@ class App extends Component {
     this.handleDrag = this.handleDrag.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
     this.setMarkers = this.setMarkers.bind(this);
+    this.snapToRoad = this.snapToRoad.bind(this);
   }
 
   componentDidMount() {
@@ -67,6 +68,23 @@ class App extends Component {
 
     this.markers.push(marker);
 
+    this.snapToRoad(path);
+
+  }
+
+  snapToRoad(path) {
+    let pathValues = [];
+    for (let i = 0; i < path.getLength(); i++) {
+      pathValues.push(path.getAt(i).toUrlValue());
+    }
+
+    let apiKey = 'AIzaSyD3LUZ3dcsIib5YwgooRk-wNYKME99MWIc';
+
+    $.get('https://roads.googleapis.com/v1/snapToRoads', {
+      interpolate: true,
+      key: apiKey,
+      path: pathValues.join('|'),
+    }, console.log('hi'));
   }
 
   handleDrag(location) {
