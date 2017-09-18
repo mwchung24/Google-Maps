@@ -9,6 +9,7 @@ class App extends Component {
 
     this.markers = [];
     this.handleClick = this.handleClick.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
     this.setMarkers = this.setMarkers.bind(this);
   }
@@ -43,8 +44,18 @@ class App extends Component {
       title: '#' + path.getLength(),
     });
 
+    marker.addListener('drag', (event) => {
+      this.handleDrag(event.latLng);
+    });
+
     this.markers.push(marker);
 
+  }
+
+  handleDrag(location) {
+    let path = this.polyline.getPath();
+    path.pop();
+    path.push(location);
   }
 
   setMarkers(map, lastMarker) {
