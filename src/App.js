@@ -1,3 +1,4 @@
+/*eslint-env jquery*/
 import React, { Component } from 'react';
 import './App.css';
 
@@ -51,15 +52,13 @@ class App extends Component {
   }
 
   handleClick(location) {
-    let path = this.polyline.getPath();
-    path.push(location);
 
     let marker = new google.maps.Marker({
       position:location,
       map: this.map,
       draggable: true,
       animation: google.maps.Animation.DROP,
-      title: '#' + path.getLength(),
+      // title: '#' + path.getLength(),
     });
 
     marker.addListener('drag', (event) => {
@@ -68,6 +67,9 @@ class App extends Component {
 
     this.markers.push(marker);
 
+
+    let path = this.polyline.getPath();
+    path.push(location);
     this.snapToRoad(path);
 
   }
@@ -84,7 +86,9 @@ class App extends Component {
       interpolate: true,
       key: apiKey,
       path: pathValues.join('|'),
-    }, console.log('hi'));
+    }, function(data) {
+      console.log(data);
+    });
   }
 
   handleDrag(location) {
@@ -116,7 +120,7 @@ class App extends Component {
       <div id='map-container' ref='map'>
         <div className='googlemaps' ref={map => this.mapNode = map}></div>
         <div id='search'>
-          <p className='auto'><input type='text' id='autoc'/></p>
+          <p className='auto'><input placeholder='Search Google Maps' type='text' id='autoc'/></p>
         </div>
         <button className='undoButton' onClick={this.handleUndo}>Undo</button>
       </div>

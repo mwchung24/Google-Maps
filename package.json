@@ -12,5 +12,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  } 
+  },
+  "env": {
+  "browser": true,
+  "commonjs": true,
+  "es6": true,
+  "jquery": true
+  }
 }

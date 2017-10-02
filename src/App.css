@@ -25,3 +25,11 @@
   font-size: 16px;
   outline: none;
 }
+
+#search {
+  margin-right: 50px;
+  background-color: white;
+  opacity: .8;
+  padding-left: 10px;
+  padding-right: 10px;
+}
