@@ -9,11 +9,16 @@ class App extends Component {
     super(props);
 
     this.markers = [];
+    this.snappedCoordinates = [];
+    this.placeIdArray = [];
     this.handleClick = this.handleClick.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
     this.setMarkers = this.setMarkers.bind(this);
     this.snapToRoad = this.snapToRoad.bind(this);
+    this.snapToRoadResponse = this.snapToRoadResponse.bind(this);
+    this.drawRoad = this.drawRoad.bind(this);
   }
 
   componentDidMount() {
@@ -22,12 +27,20 @@ class App extends Component {
       zoom: 15,
     };
     this.map = new google.maps.Map(this.mapNode, mapOptions);
+    // this.polyline = new google.maps.Polyline({
+    //   strokeColor: '#779ECB',
+    //   strokeOpacity: 1.0,
+    //   strokeWeight: 3,
+    // });
+
     this.polyline = new google.maps.Polyline({
+      path: this.snappedCoordinates,
       strokeColor: '#779ECB',
       strokeOpacity: 1.0,
       strokeWeight: 3,
     });
-    this.polyline.setMap(this.map);
+
+    // this.polyline.setMap(this.map);
 
     this.map.addListener('click', (event) => {
       this.handleClick(event.latLng);
@@ -52,6 +65,8 @@ class App extends Component {
   }
 
   handleClick(location) {
+    // let path = this.polyline.getPath();
+    // path.push(location);
 
     let marker = new google.maps.Marker({
       position:location,
@@ -65,16 +80,18 @@ class App extends Component {
       this.handleDrag(event.latLng);
     });
 
-    this.markers.push(marker);
+    marker.addListener('drop', (event) => {
+      this.handleDrop(event.latLng);
+    });
 
-
-    let path = this.polyline.getPath();
-    path.push(location);
-    this.snapToRoad(path);
-
+    this.snapToRoad(location, marker);
   }
 
-  snapToRoad(path) {
+  snapToRoad(location, marker) {
+    this.markers.push(marker);
+    let path = this.polyline.getPath();
+    path.push(location);
+
     let pathValues = [];
     for (let i = 0; i < path.getLength(); i++) {
       pathValues.push(path.getAt(i).toUrlValue());
@@ -86,15 +103,65 @@ class App extends Component {
       interpolate: true,
       key: apiKey,
       path: pathValues.join('|'),
-    }, function(data) {
-      console.log(data);
+    }, (data) => {
+      this.snapToRoadResponse(data);
+      this.drawRoad();
     });
+    path.pop();
+  }
+
+  snapToRoadResponse(data) {
+    this.snappedCoordinates = [];
+    this.placeIdArray = [];
+
+    for (let i = 0; i < data.snappedPoints.length; i++) {
+      let latlng = new google.maps.LatLng(
+        data.snappedPoints[i].location.latitude,
+        data.snappedPoints[i].location.longitude
+      );
+      this.snappedCoordinates.push(latlng);
+      this.placeIdArray.push(data.snappedPoints[i].placeId);
+    }
+  }
+
+  drawRoad() {
+    this.polyline = new google.maps.Polyline({
+      path: this.snappedCoordinates,
+      strokeColor: '#779ECB',
+      strokeOpacity: 1.0,
+      strokeWeight: 3,
+    });
+
+    this.polyline.setMap(this.map);
   }
 
   handleDrag(location) {
-    let path = this.polyline.getPath();
-    path.pop();
-    path.push(location);
+    // let path = this.polyline.getPath();
+    // path.pop();
+    // path.push(location);
+    this.snapToRoad(location);
+  }
+
+  handleDrop(location) {
+    this.markers.pop();
+
+    let marker = new google.maps.Marker({
+      position:location,
+      map: this.map,
+      draggable: true,
+      animation: google.maps.Animation.DROP,
+      // title: '#' + path.getLength(),
+    });
+
+    marker.addListener('drag', (event) => {
+      this.handleDrag(event.latLng);
+    });
+
+    marker.addListener('drop', (event) => {
+      this.handleDrop(event.latLng);
+    });
+
+    this.snapToRoad(location, marker);
   }
 
   setMarkers(map, lastMarker) {
